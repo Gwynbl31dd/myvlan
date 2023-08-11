@@ -1,0 +1,17 @@
+<component name="libraryTable">
+  <library name="test-lib">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/src/java/test-lib" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/src/java/test-lib" />
+      <root url="jar://$PROJECT_DIR$/src/java/test-lib/conf-api-src-8.1.jar!/src" />
+      <root url="jar://$PROJECT_DIR$/src/java/test-lib/conf-api-src.jar!/src" />
+      <root url="jar://$PROJECT_DIR$/src/java/test-lib/ncs-src-6.1.jar!/src" />
+      <root url="jar://$PROJECT_DIR$/src/java/test-lib/ncs-src.jar!/src" />
+    </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/src/java/test-lib" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/src/java/test-lib" recursive="false" type="SOURCES" />
+  </library>
+</component>

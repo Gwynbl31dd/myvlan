@@ -1,0 +1,84 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+    <devices xmlns="http://tail-f.com/ns/ncs">
+        <device>
+            <name>{$DEVICE}</name>
+            <config>
+                <vlan xmlns="urn:ios" tags="merge">
+                    <vlan-list>
+                        <id>{$VLAN_ID}</id>
+                    </vlan-list>
+                </vlan>
+                <interface xmlns="urn:ios">
+                    <FastEthernet when="{$INT_TYPE = 'FastEthernet'}">
+                        <name>{$INTF_NAME}</name>
+                        <switchport>
+                            <trunk>
+                                <allowed>
+                                    <vlan tags="merge">
+                                        <vlans>{$VLAN_ID}</vlans>
+                                    </vlan>
+                                </allowed>
+                            </trunk>
+                        </switchport>
+                        <ip>
+                            <no-address>
+                                <address tags="delete" />
+                            </no-address>
+                        </ip>
+                    </FastEthernet>
+                    <Ethernet when="{$INT_TYPE = 'Ethernet'}">
+                        <name>{$INTF_NAME}</name>
+                        <switchport>
+                            <trunk>
+                                <allowed>
+                                    <vlan tags="merge">
+                                        <vlans>{$VLAN_ID}</vlans>
+                                    </vlan>
+                                </allowed>
+                            </trunk>
+                        </switchport>
+                        <ip>
+                            <no-address>
+                                <address tags="delete" />
+                            </no-address>
+                        </ip>
+                    </Ethernet>
+                    <GigabitEthernet when="{$INT_TYPE = 'GigabitEthernet'}">
+                        <name>{$INTF_NAME}</name>
+                        <switchport>
+                            <trunk>
+                                <allowed>
+                                    <vlan tags="merge">
+                                        <vlans>{$VLAN_ID}</vlans>
+                                    </vlan>
+                                </allowed>
+                            </trunk>
+                        </switchport>
+                        <ip>
+                            <no-address>
+                                <address tags="delete" />
+                            </no-address>
+                        </ip>
+                    </GigabitEthernet>
+                    <FortyGigabitEthernet when="{$INT_TYPE = 'FortyGigabitEthernet'}">
+                        <name>{$INTF_NAME}</name>
+                        <switchport>
+                            <trunk>
+                                <allowed>
+                                    <vlan tags="merge">
+                                        <vlans>{$VLAN_ID}</vlans>
+                                    </vlan>
+                                </allowed>
+                            </trunk>
+                        </switchport>
+                        <ip>
+                            <no-address>
+                                <address tags="delete" />
+                            </no-address>
+                        </ip>
+                    </FortyGigabitEthernet>
+                </interface>
+            </config>
+        </device>
+    </devices>
+</config-template>

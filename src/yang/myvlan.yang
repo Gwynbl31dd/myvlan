@@ -1,0 +1,97 @@
+module myvlan {
+  namespace "http://com/example/myvlan";
+  prefix myvlan;
+
+import ietf-inet-types { prefix inet; }
+    import tailf-common { prefix tailf; }
+    import tailf-ncs { prefix ncs; }
+    import tailf-ned-cisco-ios { prefix ios; }
+    import tailf-ned-cisco-ios-id {prefix ios-id; }
+
+    augment /ncs:services {
+        description "VLAN";
+        list vlan {
+            tailf:info "VLAN service";
+            uses ncs:service-data;
+            ncs:servicepoint "vlan-servicepoint";
+
+            key name;
+            leaf name {
+                tailf:info "vlan name";
+                tailf:cli-allow-range;
+                type string;
+            }
+
+            leaf vlan-id {
+                type uint32 {
+                    range "1..4096";
+                }
+            }
+
+            list device-if {
+
+                tailf:info "Device interface";
+                key "device";
+
+                leaf device {
+                	tailf:info "Device name";
+                    type leafref {
+                        path "/ncs:devices/ncs:device/ncs:name";
+                    }
+                    mandatory true;
+                }
+
+                choice interface {
+                	mandatory true;
+                    case Ethernet {
+                        leaf Ethernet {
+                            description "";
+                        	tailf:info "Ethernet Id";
+                            type leafref {
+                            	path "/ncs:devices/ncs:device[ncs:name=current()/../device]/ncs:config/ios:interface/ios:Ethernet/ios:name";
+                            }
+                        }
+                    }
+                    case FastEthernet {
+                        leaf FastEthernet {
+                        	tailf:info "FastEthernet Id";
+                            type leafref {
+                            	path "/ncs:devices/ncs:device[ncs:name=current()/../device]/ncs:config/ios:interface/ios:FastEthernet/ios:name";
+                            }
+                        }
+                    }
+                    case GigabitEthernet {
+                        leaf GigabitEthernet {
+                        	tailf:info "GigabitEthernet Id";
+                            type leafref {
+                            	path "/ncs:devices/ncs:device[ncs:name=current()/../device]/ncs:config/ios:interface/ios:GigabitEthernet/ios:name";
+                            }
+                        }
+                    }
+                    case FortyGigabitEthernet {
+                        leaf FortyGigabitEthernet {
+                        	tailf:info "FortyGigabitEthernet Id";
+                            type leafref {
+                            	path "/ncs:devices/ncs:device[ncs:name=current()/../device]/ncs:config/ios:interface/ios:FortyGigabitEthernet/ios:name";
+                            }
+                        }
+                    }
+                }
+            }
+
+            tailf:action self-test {
+                tailf:info "Perform self-test of the service";
+                tailf:actionpoint vlan-self-test;
+                output {
+                    leaf success {
+                        type boolean;
+                    }
+                    leaf message {
+                        type string;
+                        description "Free format message.";
+                    }
+                }
+            }
+        }
+    }
+}

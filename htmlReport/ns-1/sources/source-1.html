@@ -1,0 +1,179 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > MyvlanRFS</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.myvlan</a>
+</div>
+
+<h1>Coverage Summary for Class: MyvlanRFS (com.example.myvlan)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MyvlanRFS</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83.3%
+  </span>
+  <span class="absValue">
+    (5/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    87.5%
+  </span>
+  <span class="absValue">
+    (28/32)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.myvlan;
+&nbsp;
+&nbsp;import java.util.Properties;
+&nbsp;
+&nbsp;import com.tailf.conf.*;
+&nbsp;import com.tailf.dp.*;
+&nbsp;import com.tailf.dp.annotations.ServiceCallback;
+&nbsp;import com.tailf.dp.proto.*;
+&nbsp;import com.tailf.dp.services.ServiceContext;
+&nbsp;import com.tailf.navu.*;
+&nbsp;import com.tailf.ncs.template.*;
+&nbsp;
+<b class="fc">&nbsp;public class MyvlanRFS {</b>
+&nbsp;
+&nbsp;    private static final String VLAN_TEMPLATE = &quot;myvlan-template&quot;;
+&nbsp;    private static final String VLAN_ID = &quot;VLAN-ID&quot;;
+&nbsp;    private static final String DEVICE = &quot;DEVICE&quot;;
+&nbsp;    private static final String INTF_NAME = &quot;INTF_NAME&quot;;
+&nbsp;    private static final String INTF_ID = &quot;INTF_ID&quot;;
+&nbsp;
+&nbsp;    @ServiceCallback(servicePoint = &quot;myvlan-servicepoint&quot;, callType = ServiceCBType.CREATE)
+&nbsp;    public Properties create(ServiceContext context, NavuNode service, NavuNode ncsRoot, Properties opaque)
+&nbsp;            throws ConfException {
+<b class="fc">&nbsp;        String servicePath = null;</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            servicePath = service.getKeyPath();</b>
+<b class="fc">&nbsp;            Template vlanTemplate = getTemplate(context);</b>
+<b class="fc">&nbsp;            TemplateVariables vlanVar = new TemplateVariables();</b>
+<b class="fc">&nbsp;            setupInterfaces(service,vlanTemplate,vlanVar);</b>
+<b class="fc">&nbsp;        } catch (Exception e) {</b>
+<b class="fc">&nbsp;            throw new DpCallbackException(&quot;Cannot create service &quot; + servicePath, e);</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        return opaque;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    Template getTemplate(ServiceContext context) throws ConfException {
+<b class="nc">&nbsp;        return new Template(context, VLAN_TEMPLATE);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void setupInterfaces(NavuNode service,Template vlanTemplate,TemplateVariables vlanVar) throws Exception {
+<b class="fc">&nbsp;        NavuList interfaces = service.list(&quot;device-if&quot;);</b>
+<b class="fc">&nbsp;        for (NavuContainer interfaceContainer : interfaces.elements()) {</b>
+<b class="fc">&nbsp;            applyTemplate(service,vlanTemplate,vlanVar,interfaceContainer);</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void applyTemplate(NavuNode service, Template vlanTemplate, TemplateVariables vlanVar,NavuContainer interfaceContainer) throws Exception {
+<b class="fc">&nbsp;        String deviceName = interfaceContainer.leaf(&quot;device&quot;).valueAsString();</b>
+<b class="fc">&nbsp;        String interfaceType = interfaceContainer.getSelectedCase(&quot;interface&quot;).getTag();</b>
+<b class="fc">&nbsp;        String interfaceName = interfaceContainer.leaf(interfaceType).valueAsString();</b>
+<b class="fc">&nbsp;        String vlanId = service.leaf(&quot;vlan-id&quot;).valueAsString();</b>
+<b class="fc">&nbsp;        if(MyvlanRFS.isValidVlan(vlanId)) {</b>
+<b class="fc">&nbsp;            vlanVar.putQuoted(VLAN_ID, vlanId);</b>
+<b class="fc">&nbsp;            vlanVar.putQuoted(DEVICE, deviceName);</b>
+<b class="fc">&nbsp;            vlanVar.putQuoted(INTF_NAME, interfaceName);</b>
+<b class="fc">&nbsp;            vlanVar.putQuoted(INTF_ID, interfaceType);</b>
+<b class="fc">&nbsp;            vlanTemplate.apply(service, vlanVar);</b>
+&nbsp;        }
+&nbsp;        else {
+<b class="fc">&nbsp;            throw new Exception();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private static boolean isValidVlan(String str) {
+<b class="fc">&nbsp;        if (str == null || str.isEmpty()) {</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;        try {
+<b class="fc">&nbsp;            long value = Long.parseLong(str);</b>
+<b class="fc">&nbsp;            return value &gt;= 1 &amp;&amp; value &lt;= 4094;</b>
+<b class="nc">&nbsp;        } catch (Exception ex) {</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-08-11 16:39</div>
+</div>
+</body>
+</html>
